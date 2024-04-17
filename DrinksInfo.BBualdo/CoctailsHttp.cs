@@ -21,4 +21,20 @@ public class CoctailsHttp
     categories = response.Categories;
     return categories;
   }
+
+  public static async Task<List<Drink>?> GetDrinks(HttpClient client, string categoryName)
+  {
+    List<Drink> drinks;
+
+    Stream stream = await client.GetStreamAsync($"https://www.thecocktaildb.com/api/json/v1/1/filter.php?c={categoryName.Trim()}");
+    DrinksResponse? response = await JsonSerializer.DeserializeAsync<DrinksResponse>(stream);
+    if (response == null)
+    {
+      AnsiConsole.Markup("[red]Couldn't establish connection sto CoctailDB server.[/]");
+      return null;
+    }
+
+    drinks = response.Drinks;
+    return drinks;
+  }
 }

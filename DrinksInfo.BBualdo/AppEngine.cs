@@ -18,6 +18,9 @@ public class AppEngine
 
   public async Task CategoriesMenu()
   {
+    AnsiConsole.Clear();
+    ConsoleEngine.ShowTitle();
+
     List<Category>? categories = await CoctailsHttp.GetCategories(Client);
     if (categories == null || categories.Count == 0)
     {
@@ -43,6 +46,38 @@ public class AppEngine
       IsRunning = false;
       Environment.Exit(0);
     }
+
+    await DrinksMenu(choosenCategory);
+  }
+
+  public async Task<bool> DrinksMenu(string choosenCategory)
+  {
+    List<Drink>? drinks = await CoctailsHttp.GetDrinks(Client, choosenCategory);
+    if (drinks == null || drinks.Count == 0)
+    {
+      PressAnyKey();
+      return false;
+    }
+
+    List<string> choices = new List<string>() {
+      "Back"
+    };
+
+    foreach (Drink drink in drinks)
+    {
+      choices.Add(drink.Name);
+    }
+
+    string userChoice = ConsoleEngine.GetSelection("[yellow]Select drink to reveal more info[/]", choices);
+
+    if (userChoice == "Back") return false;
+
+    string selectedDrinksId = drinks.Where(drink => drink.Name == userChoice).First().Id;
+
+    AnsiConsole.Markup($"[green]Selected drink with ID: {selectedDrinksId}[/]");
+
+    PressAnyKey();
+    return true;
   }
 
   private void PressAnyKey()
