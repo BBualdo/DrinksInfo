@@ -14,7 +14,7 @@ public class CoctailsHttp
     CategoriesResponse? response = await JsonSerializer.DeserializeAsync<CategoriesResponse>(stream);
     if (response == null)
     {
-      AnsiConsole.Markup("[red]Couldn't establish connection sto CoctailDB server.[/]");
+      AnsiConsole.Markup("[red]Couldn't establish connection to CoctailDB server.[/]");
       return null;
     }
 
@@ -22,19 +22,35 @@ public class CoctailsHttp
     return categories;
   }
 
-  public static async Task<List<Drink>?> GetDrinks(HttpClient client, string categoryName)
+  public static async Task<List<Drinks>?> GetDrinks(HttpClient client, string categoryName)
   {
-    List<Drink> drinks;
+    List<Drinks> drinks;
 
     Stream stream = await client.GetStreamAsync($"https://www.thecocktaildb.com/api/json/v1/1/filter.php?c={categoryName.Trim()}");
     DrinksResponse? response = await JsonSerializer.DeserializeAsync<DrinksResponse>(stream);
     if (response == null)
     {
-      AnsiConsole.Markup("[red]Couldn't establish connection sto CoctailDB server.[/]");
+      AnsiConsole.Markup("[red]Couldn't establish connection to CoctailDB server.[/]");
       return null;
     }
 
     drinks = response.Drinks;
     return drinks;
+  }
+
+  public static async Task<Drink?> GetDrink(HttpClient client, string drinkId)
+  {
+    List<Drink>? drinks;
+    Stream stream = await client.GetStreamAsync($"https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i={drinkId}");
+    DrinkResponse? response = await JsonSerializer.DeserializeAsync<DrinkResponse>(stream);
+
+    if (response == null)
+    {
+      AnsiConsole.Markup("[red]Couldn't establish connection to CoctailDB server.[/]");
+      return null;
+    }
+    drinks = response.Drinks;
+
+    return drinks.First();
   }
 }

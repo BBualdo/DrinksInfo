@@ -2,4 +2,10 @@
 
 namespace DrinksInfo.BBualdo.Models;
 
-public record class Drink([property: JsonPropertyName("idDrink")] string Id, [property: JsonPropertyName("strDrink")] string Name);
+public record class Drink(
+  [property: JsonPropertyName("strDrink")] string Name,
+  [property: JsonPropertyName("strAlcoholic")] string Type,
+  [property: JsonPropertyName("strInstructions")] string Instructions
+  )
+{
+}

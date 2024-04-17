@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using DrinksInfo.BBualdo.Models;
+using Spectre.Console;
 
 namespace DrinksInfo.BBualdo;
 
@@ -18,5 +19,17 @@ public class ConsoleEngine
     Rule rule = new Rule("Drinks Info").DoubleBorder().Centered();
     rule.Style = new Style(Color.Aqua);
     AnsiConsole.Write(rule);
+  }
+
+  public static void ShowDrinkTable(Drink drink)
+  {
+    Table table = new();
+    table.AddColumn(new TableColumn("[yellow]Name[/]"));
+    table.AddColumn(new TableColumn("[yellow]Type[/]"));
+    table.AddColumn(new TableColumn("[yellow]Instructions[/]"));
+
+    table.AddRow(drink.Name, drink.Type, drink.Instructions);
+
+    AnsiConsole.Write(table);
   }
 }

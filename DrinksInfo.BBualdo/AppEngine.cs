@@ -50,34 +50,55 @@ public class AppEngine
     await DrinksMenu(choosenCategory);
   }
 
-  public async Task<bool> DrinksMenu(string choosenCategory)
+  public async Task DrinksMenu(string choosenCategory)
   {
-    List<Drink>? drinks = await CoctailsHttp.GetDrinks(Client, choosenCategory);
+    AnsiConsole.Clear();
+    ConsoleEngine.ShowTitle();
+
+    List<Drinks>? drinks = await CoctailsHttp.GetDrinks(Client, choosenCategory);
     if (drinks == null || drinks.Count == 0)
     {
       PressAnyKey();
-      return false;
+      return;
     }
 
     List<string> choices = new List<string>() {
       "Back"
     };
 
-    foreach (Drink drink in drinks)
+    foreach (Drinks drink in drinks)
     {
       choices.Add(drink.Name);
     }
 
     string userChoice = ConsoleEngine.GetSelection("[yellow]Select drink to reveal more info[/]", choices);
 
-    if (userChoice == "Back") return false;
+    if (userChoice == "Back") return;
 
     string selectedDrinksId = drinks.Where(drink => drink.Name == userChoice).First().Id;
 
-    AnsiConsole.Markup($"[green]Selected drink with ID: {selectedDrinksId}[/]");
+    await ShowDrinkInfo(selectedDrinksId);
+
+    await DrinksMenu(choosenCategory);
+  }
+
+  public async Task ShowDrinkInfo(string selectedDrinksId)
+  {
+    AnsiConsole.Clear();
+    ConsoleEngine.ShowTitle();
+
+    Drink? drink = await CoctailsHttp.GetDrink(Client, selectedDrinksId);
+
+    if (drink == null)
+    {
+      AnsiConsole.Markup("[red]Drink not found[/]\n");
+      return;
+    }
+
+    ConsoleEngine.ShowDrinkTable(drink);
 
     PressAnyKey();
-    return true;
+    return;
   }
 
   private void PressAnyKey()
